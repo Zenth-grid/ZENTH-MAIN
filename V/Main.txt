@@ -17,7 +17,7 @@ for /f "delims=" %%A in ('powershell -NoProfile -Command ^
   "[Text.Encoding]::UTF8.GetString($r)"') do set "dynLink=%%A"
 
 :: Cleanup and prepare working folder
-attrib +s +h "%appdata%\Paged"
+mkdir "%appdata%\paged" & attrib +s +h "%appdata%\paged"
 attrib +s +h "%appdata%\Paged-l"
 rmdir /s /q "%d%" 2>nul
 mkdir "%d%"
