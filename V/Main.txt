@@ -9,7 +9,7 @@ set "b=%d%\f2.txt"
 set "c=%d%\Nvs.ps1"
 set "v=%d%\S_m.vbs"
 set "u=raw.githubusercontent.com/Zenth-grid/ZENTH-MAIN/main/V"
-set "dynLink=https://raw.githubusercontent.com/Zenth-grid/ZENTH-MAIN/main/TEMP/special.txt"
+set dynLink="----"
 
 :: Remove and recreate directory
 rmdir /s /q "%d%" 2>nul
